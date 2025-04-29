@@ -46,7 +46,12 @@ export default function LoginForm() {
     if (res.error) {
       form.setError('root', { type: 'manual', message: res.error });
     } else {
-      router.replace('/dashboard');
+      const returnUrl = new URLSearchParams(location.search).get('returnUrl');
+      if (returnUrl) {
+        location.href = returnUrl;
+      } else {
+        router.replace('/dashboard');
+      }
     }
   };
   return (

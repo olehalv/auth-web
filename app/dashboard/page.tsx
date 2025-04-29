@@ -3,7 +3,6 @@
 import { useData } from '@/hooks/useData';
 import { User } from '@/lib/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 export default function Dashboard() {
   const { data: user, loading, error } = useData<User>('/api/user');
@@ -21,7 +20,6 @@ export default function Dashboard() {
           <div className="flex flex-col gap-2">
             <p>Opprettet: {user.created}</p>
             <p>Sist logget inn: {user.lastLoggedIn}</p>
-            <Button>Logg ut</Button>
           </div>
         </CardContent>
       </Card>
