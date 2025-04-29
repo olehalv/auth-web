@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -7,8 +9,15 @@ import {
 } from '@/components/ui/card';
 import LoginForm from '@/components/login-form';
 import Link from 'next/link';
+import { useData } from '@/hooks/useData';
+import { User } from '@/lib/types';
 
 export default function Home() {
+  const { data: user, loading } = useData<User>('/api/user');
+
+  if (loading) return <div>loading...</div>;
+  if (user) return (location.href = '/dashboard');
+
   return (
     <div className="flex flex-col h-screen justify-center items-center">
       <Card className="w-[350px]">

@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { fetchData } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z
@@ -26,6 +28,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,26 +38,17 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const res = await fetch(
-        'http://auth-service.localhostdev:8080/api/auth',
-        {
-          method: 'POST',
-          body: JSON.stringify({ email: values.email, pass: values.pass }),
-        },
-      );
+    const res = await fetchData('/api/auth', 'POST', {
+      email: values.email,
+      pass: values.pass,
+    });
 
-      const { token } = (await res.json()) as {
-        returnUrl: string;
-        token: string;
-      };
-
-      console.log(token);
-    } catch (e) {
-      console.log(e);
+    if (res.error) {
+      form.setError('root', { type: 'manual', message: res.error });
+    } else {
+      router.replace('/dashboard');
     }
   };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -84,6 +78,9 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
+        {form.formState.errors.root && (
+          <FormMessage>{form.formState.errors.root.message}</FormMessage>
+        )}
         <Button type="submit" className="w-full">
           Logg inn
         </Button>
